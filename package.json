@@ -1,0 +1,40 @@
+{
+  "name": "tool-schema-fixer",
+  "version": "0.1.0",
+  "description": "Normalize tool and JSON schemas into shapes that are easier to use across OpenAI, Anthropic, and Gemini.",
+  "type": "module",
+  "bin": {
+    "tool-schema-fixer": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "check": "npm run typecheck",
+    "clean": "node -e \"import('node:fs').then(({rmSync}) => rmSync('dist', { recursive: true, force: true }))\"",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "json-schema",
+    "openai",
+    "anthropic",
+    "gemini",
+    "cli",
+    "tools"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.12.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

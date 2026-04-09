@@ -37,5 +37,8 @@ jobs:
       - name: Smoke test built CLI
         run: chmod +x dist/index.js && ./dist/index.js --help
 
+      - name: Smoke test packed npm artifact
+        run: node tests/pack-smoke.mjs
+
       - name: Test
         run: npm test

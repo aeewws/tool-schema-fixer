@@ -203,11 +203,13 @@ function normalizeTypeArray(schema: JsonObject, report: NormalizeReport, context
 
       schema.type = chosenRootType;
     } else {
-      const branches = uniqueTypeArray
-        .filter((value) => SIMPLE_TYPE_SET.has(value))
-        .map((value) => ({ type: value as JsonValue }));
-      delete schema.type;
-      schema.anyOf = branches;
+      pushFinding(report, {
+        code: "type-array-unresolved",
+        level: "warning",
+        message: "Found a multi-type schema that cannot be normalized safely for this target without introducing unsupported keywords.",
+        path: toJsonPointer([...context.path, "type"])
+      });
+      return;
     }
   }
 
@@ -218,7 +220,7 @@ function normalizeTypeArray(schema: JsonObject, report: NormalizeReport, context
     message:
       context.target === "openai" && context.isRoot
         ? "OpenAI-targeted root schemas do not handle type arrays well; the fixer kept only one root type."
-        : "Converted a JSON Schema type array into anyOf for target compatibility.",
+        : "Found a multi-type schema that needs manual review for this target.",
     path: toJsonPointer([...context.path, "type"])
   });
 }

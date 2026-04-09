@@ -34,5 +34,8 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Smoke test built CLI
+        run: chmod +x dist/index.js && ./dist/index.js --help
+
       - name: Test
         run: npm test

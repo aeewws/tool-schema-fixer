@@ -247,16 +247,23 @@ function normalizeAnyOfNullableUnion(
     ...baseBranch,
     ...outer
   };
+  const concreteType = merged.type;
+
+  if (typeof concreteType !== "string" || concreteType === "null") {
+    pushFinding(report, {
+      code: `${keyword}-nullable-unresolved`,
+      level: "warning",
+      message: `Found ${keyword} with a null branch that could not be normalized without changing semantics.`,
+      path: toJsonPointer(context.path)
+    });
+    return;
+  }
 
   if (context.mode === "fix") {
     if (context.target === "anthropic") {
-      if (typeof merged.type === "string" && merged.type !== "null") {
-        merged.type = [merged.type, "null"];
-      }
+      merged.type = [concreteType, "null"];
     } else if (context.target === "gemini") {
-      if (typeof merged.type === "string" && merged.type !== "null") {
-        merged.nullable = true;
-      }
+      merged.nullable = true;
     }
 
     replaceObject(schema, merged);

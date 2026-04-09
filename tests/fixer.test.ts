@@ -113,6 +113,51 @@ describe("normalizeDocument", () => {
     expect(schema.additionalProperties).toBe(false);
   });
 
+  it("normalizes an MCP inputSchema wrapper", () => {
+    const input: JsonObject = {
+      name: "lookup",
+      inputSchema: {
+        type: "object",
+        properties: {
+          city: {
+            type: ["string", "null"]
+          }
+        }
+      }
+    };
+
+    const result = normalizeDocument(input, "gemini", "fix");
+    const fixed = result.document as JsonObject;
+    const schema = fixed.inputSchema as JsonObject;
+    const property = (schema.properties as JsonObject).city as JsonObject;
+
+    expect(property.type).toBe("string");
+    expect(property.nullable).toBe(true);
+    expect(result.report.schemaPath).toBe("/inputSchema");
+  });
+
+  it("does not drop nullability for enum nullable unions", () => {
+    const input: JsonObject = {
+      parameters: {
+        type: "object",
+        properties: {
+          city: {
+            anyOf: [{ enum: ["a", "b"] }, { type: "null" }]
+          }
+        }
+      }
+    };
+
+    const result = normalizeDocument(input, "gemini", "fix");
+    const fixed = result.document as JsonObject;
+    const schema = fixed.parameters as JsonObject;
+    const property = (schema.properties as JsonObject).city as JsonObject;
+
+    expect(property.anyOf).toEqual([{ enum: ["a", "b"] }, { type: "null" }]);
+    expect(property.nullable).toBeUndefined();
+    expect(result.report.findings.some((finding) => finding.code === "anyOf-nullable-unresolved")).toBe(true);
+  });
+
   it("reports unsupported OpenAI keywords during lint", () => {
     const input: JsonObject = {
       type: "object",

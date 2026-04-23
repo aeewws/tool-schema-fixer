@@ -3,3 +3,13 @@ dist/
 coverage/
 *.log
 
+
+# OS / local files
+.DS_Store
+Thumbs.db
+.env
+.env.*
+tmp/
+temp/
+.turbo/
+.next/

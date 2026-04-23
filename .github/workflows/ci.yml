@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -33,6 +36,12 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Smoke test built CLI
+        run: chmod +x dist/index.js && ./dist/index.js --help
+
+      - name: Smoke test packed npm artifact
+        run: node tests/pack-smoke.mjs
 
       - name: Test
         run: npm test

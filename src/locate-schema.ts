@@ -32,6 +32,14 @@ export function locateSchemaDocument(document: JsonValue): LocatedSchema {
     };
   }
 
+  if (isJsonObject(document) && "inputSchema" in document) {
+    return {
+      schema: document.inputSchema,
+      path: ["inputSchema"],
+      wrapper: "tool-parameters"
+    };
+  }
+
   return {
     schema: document,
     path: [],
